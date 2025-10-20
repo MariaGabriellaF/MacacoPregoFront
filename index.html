@@ -163,13 +163,39 @@
 
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      bubble.textContent = text;  
+      
+      // *** CORREÇÃO DE ITÁLICO: CONVERTE MARKDOWN EM HTML ***
+      let formattedText = text;
 
+      // Regex robusta para itálico com Sublinhado (_texto com espaços_)
+      // Encontra qualquer texto entre sublinhados
+      formattedText = formattedText.replace(/_([^_\n]+?)_/g, '<i>$1</i>');
+
+      // Regex robusta para itálico com Asterisco (*texto com espaços*)
+      // Encontra qualquer texto entre asteriscos
+      formattedText = formattedText.replace(/\*([^\*\n]+?)\*/g, '<i>$1</i>');
+      
+      // Usa innerHTML para renderizar o HTML (incluindo a tag <i>)
+      bubble.innerHTML = formattedText;
+     
       msgWrap.appendChild(meta);
       msgWrap.appendChild(bubble);
       container.appendChild(msgWrap);
       container.scrollTop = container.scrollHeight;
     }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const userInput = document.getElementById('userInput');
+        
+        userInput.addEventListener('keydown', function(e) {
+            if (e.keyCode === 13 && !e.shiftKey) { 
+                
+                e.preventDefault(); 
+                sendMessage();
+            }
+        });
+    });
+   
   </script>
 </body>
 </html>
