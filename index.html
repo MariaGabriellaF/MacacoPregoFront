@@ -151,38 +151,39 @@
     }
 
     function appendMessage(role, text) {
-      const container = document.getElementById('messages');
-      const msgWrap = document.createElement('div');
-      msgWrap.className = `message ${role}`;
+    const container = document.getElementById('messages');
+    const msgWrap = document.createElement('div');
+    msgWrap.className = `message ${role}`;
 
-      const meta = document.createElement('div');
-      meta.className = 'meta';
-      const now = new Date();
-      const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      meta.textContent = role === 'user' ? `Você • ${hora}` : `Macaco-Prego-Galego • ${hora}`;
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const now = new Date();
+    const hora = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    meta.textContent = role === 'user' ? `Você • ${hora}` : `Macaco-Prego-Galego • ${hora}`;
 
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      
-      // *** CORREÇÃO DE ITÁLICO: CONVERTE MARKDOWN EM HTML ***
-      let formattedText = text;
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    
+    let formattedText = text;
 
-      // Regex robusta para itálico com Sublinhado (_texto com espaços_)
-      // Encontra qualquer texto entre sublinhados
-      formattedText = formattedText.replace(/_([^_\n]+?)_/g, '<i>$1</i>');
+    // 1. CONVERSÃO DE IMAGENS: ![Texto](URL) -> <img src="URL" alt="Texto">
+    // Esta regex procura o padrão Markdown de imagem
+    formattedText = formattedText.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; display: block; margin-top: 10px; border-radius: 8px;">');
 
-      // Regex robusta para itálico com Asterisco (*texto com espaços*)
-      // Encontra qualquer texto entre asteriscos
-      formattedText = formattedText.replace(/\*([^\*\n]+?)\*/g, '<i>$1</i>');
-      
-      // Usa innerHTML para renderizar o HTML (incluindo a tag <i>)
-      bubble.innerHTML = formattedText;
-     
-      msgWrap.appendChild(meta);
-      msgWrap.appendChild(bubble);
-      container.appendChild(msgWrap);
-      container.scrollTop = container.scrollHeight;
-    }
+    // 2. CONVERSÃO DE ITÁLICO: Mantenha as regras anteriores
+    formattedText = formattedText.replace(/_([^_\n]+?)_/g, '<i>$1</i>');
+    //formattedText = formattedText.replace(/\*([^\*\n]+?)\*/g, '<i>$1</i>');
+
+    formattedText = formattedText.replace(/\*\*([^\*]+?)\*\*/g, '<strong>$1</strong>');
+    
+    // Usa innerHTML para renderizar o HTML (tags <i> e <img>)
+    bubble.innerHTML = formattedText;
+    
+    msgWrap.appendChild(meta);
+    msgWrap.appendChild(bubble);
+    container.appendChild(msgWrap);
+    container.scrollTop = container.scrollHeight;
+}
 
     document.addEventListener('DOMContentLoaded', () => {
         const userInput = document.getElementById('userInput');
